@@ -1,3 +1,4 @@
 {
-  "/entity-to-dto/page": "app/entity-to-dto/page.js"
+  "/entity-to-dto/page": "app/entity-to-dto/page.js",
+  "/page": "app/page.js"
 }

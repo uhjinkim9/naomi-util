@@ -1,8 +1,8 @@
 import type {Metadata} from "next";
 
 export const metadata: Metadata = {
-	title: "UCUBERS",
-	description: "THE UCUBE GROUPWARE",
+	title: "NAOMI UTIL",
+	description: "Entity Converter",
 	icons: {
 		icon: "/favicon.ico",
 	},
