@@ -18,9 +18,11 @@
 		"typescript": "^5.5.4"
 	},
 	"scripts": {
-		"build": "next build",
+		"build": "next build client",
 		"lint": "next lint",
 		"start": "concurrently -k -n front,back -c cyan,magenta \"npm run dev:front\" \"npm run dev:back\"",
+		"prestart": "npm run build:front",
+		"build:front": "next build client",
 		"dev:front": "next dev client -p 3333",
 		"dev:back": "cross-env PORT=5555 USE_DB=false tsx watch server/src/main.ts"
 	}
