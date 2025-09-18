@@ -1,0 +1,44 @@
+@use "@/styles/variables.scss" as *;
+
+.list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: 0.75rem;
+	width: 100%;
+
+	li {
+		display: grid;
+		grid-template-columns: 25% 50% 25%;
+		padding: 10px;
+		align-items: center;
+		justify-content: space-between;
+		border-bottom: 0.5px dotted rgba($color: $gray4, $alpha: 0.5);
+
+		.creator {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border: $u-orange 1px solid;
+			border-radius: 25px;
+			width: 80%;
+			margin-left: 0.2rem;
+			padding: 0.16em 0;
+		}
+
+		.name {
+			font-weight: 600;
+		}
+		.title {
+			cursor: pointer;
+			display: inline-block;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			width: 80%;
+		}
+		.date {
+			text-align: right;
+		}
+	}
+}
