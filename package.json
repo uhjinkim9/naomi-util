@@ -18,12 +18,16 @@
 		"typescript": "^5.5.4"
 	},
 	"scripts": {
-		"build": "next build client",
 		"lint": "next lint",
+		"build:front": "next build client",
+		"build:back": "tsc -p server/tsconfig.json",
+		"build": "npm run build:front && npm run build:back",
+		"dev:front": "next dev client -p 3333",
+		"dev:back": "cross-env PORT=5555 USE_DB=false tsx watch server/src/main.ts",
 		"start": "concurrently -k -n front,back -c cyan,magenta \"npm run dev:front\" \"npm run dev:back\"",
 		"prestart": "npm run build:front",
-		"build:front": "next build client",
-		"dev:front": "next dev client -p 3333",
-		"dev:back": "cross-env PORT=5555 USE_DB=false tsx watch server/src/main.ts"
+		"start:front": "next start client -p 3333 -H 0.0.0.0",
+		"start:back": "cross-env PORT=5555 USE_DB=false node server/dist/main.js",
+		"start:prod": "concurrently -k -n front,back -c cyan,magenta \"npm run start:front\" \"npm run start:back\""
 	}
 }
