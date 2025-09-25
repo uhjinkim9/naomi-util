@@ -1,10 +1,14 @@
 "use client";
-import {useEffect} from "react";
+import styles from "./page.module.css";
 import {useRouter} from "next/navigation";
 
 export default function RootPage() {
 	const router = useRouter();
-	useEffect(() => {
-		router.push("/entity-to-dto");
-	}, []);
+
+	return (
+		<div className={styles.root}>
+			<button onClick={() => router.push("/entity-to-dto")}>Entity to DTO Converter</button>
+			<button onClick={() => router.push("/entity-to-type")}>Entity to Type Converter</button>
+		</div>
+	)
 }
