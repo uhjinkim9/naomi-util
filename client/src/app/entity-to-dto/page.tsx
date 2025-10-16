@@ -283,6 +283,65 @@ function toRelationResDtoType(tsType: string): string {
 	return t.replace(/Entity$/, "ResDto");
 }
 
+// ===== Type generator (Entity -> Type) =====
+function toRelationType(tsType: string): string {
+  const t = tsType.trim();
+  const arrayGeneric = t.match(/^Array<(.+)>$/);
+  if (arrayGeneric) {
+    return toRelationType(arrayGeneric[1]) + "[]";
+  }
+  if (t.endsWith("[]")) {
+    const inner = t.slice(0, -2).trim();
+    return toRelationType(inner) + "[]";
+  }
+  return t.replace(/Entity$/, "Type");
+}
+
+function getTypeFieldType(field: Field): string {
+  const relation = isRelation(field);
+  if (relation) {
+    return toRelationType(field.tsType.trim());
+  }
+
+  const baseType = field.tsType.trim();
+  const isTiny = isTinyIntBoolean(field);
+  if (isTiny) return "boolean";
+
+  const isDateColumn =
+    baseType === "Date" || /type\s*:\s*['"][a-z]*date/.test(field.rawColumnMeta || "");
+  if (isAudit(field) && isDateColumn) return "Date";
+  if (isDateColumn) return "string";
+
+  const mappedEntityType = toRelationType(baseType);
+  if (mappedEntityType !== baseType) return mappedEntityType;
+
+  return baseType;
+}
+
+function genEntityType(
+  source: string,
+  parsed: ParsedEntity,
+  opts: { stripAudit: boolean }
+) {
+  const lines: string[] = [];
+  const enumImports = extractEnumImports(source, parsed.fields);
+  if (enumImports.length) {
+    lines.push(...enumImports, "");
+  }
+
+  const typeName = `${parsed.baseName}Type`;
+  lines.push(`export type ${typeName} = {`);
+
+  for (const field of parsed.fields) {
+    if (opts.stripAudit && isAudit(field)) continue;
+    const tsType = getTypeFieldType(field);
+    lines.push(`  ${field.name}?: ${tsType};`);
+  }
+
+  lines.push("};");
+  return lines.join("\n");
+}
+
 export default function EntityToDtoPage() {
 	const [input, setInput] = useState<string>("");
 	const [stripAudit, setStripAudit] = useState(true);
@@ -299,9 +358,18 @@ export default function EntityToDtoPage() {
 		() => (parsed ? genResponseDto(input, parsed) : ""),
 		[parsed, input]
 	);
+  const typeCode = useMemo(
+    () => (parsed ? genEntityType(input, parsed, { stripAudit }) : ""),
+    [parsed, stripAudit, input]
+  );
 
 	return (
 		<div style={{padding: 16, display: "grid", gap: 16}}>
+			<style>{`
+			textarea[readOnly] {
+				height: 240px !important;
+			}
+			`}</style>
 			<h2>Entity → DTO Converter</h2>
 			<div style={{display: "grid", gap: 8}}>
 				<label style={{fontWeight: 600}}>Entity source</label>
@@ -387,6 +455,34 @@ export default function EntityToDtoPage() {
 					<textarea
 						readOnly
 						value={resDtoCode}
+						style={{
+							width: "100%",
+							height: 360,
+							fontFamily: "monospace",
+							fontSize: 12,
+							padding: 8,
+						}}
+					/>
+				</div>
+			</div>
+
+			<div style={{display: "grid", gap: 16}}>
+				<div>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+						}}
+					>
+						<h3 style={{margin: 0}}>Type Definition</h3>
+						<button onClick={() => navigator.clipboard.writeText(typeCode)} disabled={!typeCode}>
+							Copy
+						</button>
+					</div>
+					<textarea
+						readOnly
+						value={typeCode}
 						style={{
 							width: "100%",
 							height: 360,

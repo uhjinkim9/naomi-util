@@ -1,4 +1,4 @@
 {
   "/page": "app/page.js",
-  "/entity-to-type/page": "app/entity-to-type/page.js"
+  "/entity-to-dto/page": "app/entity-to-dto/page.js"
 }

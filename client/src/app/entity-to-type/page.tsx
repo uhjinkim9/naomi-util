@@ -120,7 +120,8 @@ function toRelationResDtoType(tsType: string): string {
     const inner = t.slice(0, -2).trim();
     return toRelationResDtoType(inner) + "[]";
   }
-  return t.replace(/Entity$/, "ResDto");
+  // Map *Entity -> *Type for relations (including arrays)
+  return t.replace(/Entity$/, "Type");
 }
 
 function getResponseFieldType(field: Field): string {
@@ -137,6 +138,10 @@ function getResponseFieldType(field: Field): string {
     baseType === "Date" || /type\s*:\s*['"][a-z]*date/.test(field.rawColumnMeta || "");
   if (isAudit(field) && isDateColumn) return "Date";
   if (isDateColumn) return "string";
+
+  // If the field type itself is an Entity (or array of Entities), map to *Type
+  const mappedEntityType = toRelationResDtoType(baseType);
+  if (mappedEntityType !== baseType) return mappedEntityType;
 
   return baseType;
 }

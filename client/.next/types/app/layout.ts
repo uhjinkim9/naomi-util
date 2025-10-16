@@ -1,4 +1,4 @@
-// File: C:\ucubeDev\workspace\naomi-util\client\src\app\layout.tsx
+// File: D:\workspace\naomi-util\client\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
